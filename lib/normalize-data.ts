@@ -1,5 +1,13 @@
 import type { CountryWithRestaurants, Restaurant } from '@/lib/types';
 
+type RestaurantRow = Omit<Restaurant, 'items'> & {
+  restaurant_items?: Restaurant['items'];
+};
+
+type CountryRow = Omit<CountryWithRestaurants, 'restaurants'> & {
+  restaurants?: RestaurantRow[];
+};
+
 function mergeRestaurants(primary: Restaurant, secondary: Restaurant): Restaurant {
   const items = [...primary.items, ...secondary.items];
   const photos = [...primary.photos, ...secondary.photos];
@@ -31,11 +39,11 @@ function dedupeRestaurants(restaurants: Restaurant[]): Restaurant[] {
   return Array.from(byKey.values());
 }
 
-export function normalizeCountries(raw: any[]): CountryWithRestaurants[] {
+export function normalizeCountries(raw: CountryRow[]): CountryWithRestaurants[] {
   return (raw ?? []).map((country) => ({
     ...country,
     restaurants: dedupeRestaurants(
-      (country.restaurants ?? []).map((restaurant: any) => ({
+      (country.restaurants ?? []).map((restaurant) => ({
         ...restaurant,
         items: restaurant.restaurant_items ?? []
       }))

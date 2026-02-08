@@ -24,7 +24,7 @@ const countriesSourceId = 'countries-src';
 const countriesSourceLayer = 'country_boundaries';
 
 function buildCountryColorExpression(countries: CountryWithRestaurants[]) {
-  const expression: any[] = ['match', ['get', 'iso_3166_1']];
+  const expression: unknown[] = ['match', ['get', 'iso_3166_1']];
   let hasMappedCountry = false;
 
   for (const country of countries) {
@@ -112,7 +112,8 @@ export default function GlobeMap({
           source: countriesSourceId,
           'source-layer': countriesSourceLayer,
           paint: {
-            'fill-color': colorExpression as any,
+            // Set a stable default; dynamic colors are applied by a dedicated effect.
+            'fill-color': defaultCountryColor,
             'fill-opacity': 0.66,
             'fill-opacity-transition': { duration: 500, delay: 0 },
             'fill-color-transition': { duration: 550, delay: 0 }
@@ -211,7 +212,7 @@ export default function GlobeMap({
       return;
     }
 
-    map.setPaintProperty('country-fill', 'fill-color', colorExpression as any);
+    map.setPaintProperty('country-fill', 'fill-color', colorExpression as unknown as mapboxgl.Expression);
   }, [colorExpression]);
 
   useEffect(() => {
