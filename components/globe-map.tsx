@@ -61,6 +61,7 @@ export default function GlobeMap({
   const handlersBoundRef = useRef(false);
   const onCountrySelectRef = useRef(onCountrySelect);
   const photoMarkersRef = useRef<mapboxgl.Marker[]>([]);
+  const colorExpressionRef = useRef<unknown[]>([]);
   const [viewportCountryCode, setViewportCountryCode] = useState<string | null>(null);
   const [viewportCenter, setViewportCenter] = useState<[number, number] | null>(null);
 
@@ -69,6 +70,10 @@ export default function GlobeMap({
   useEffect(() => {
     onCountrySelectRef.current = onCountrySelect;
   }, [onCountrySelect]);
+
+  useEffect(() => {
+    colorExpressionRef.current = colorExpression;
+  }, [colorExpression]);
 
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) {
@@ -120,6 +125,11 @@ export default function GlobeMap({
           }
         });
       }
+      map.setPaintProperty(
+        'country-fill',
+        'fill-color',
+        colorExpressionRef.current as unknown as mapboxgl.Expression
+      );
 
       if (!map.getLayer('country-outline')) {
         map.addLayer({
